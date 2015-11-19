@@ -19,7 +19,7 @@ class HranilkaFetcher
   end
 
   def todays_menu
-    posts.find { |p| weekday_mentioned?(p['message']) }.try(:fetch, 'full_picture')
+    posts.find { |p| weekday_mentioned?(p['message']) }
   end
 
   private
@@ -35,18 +35,39 @@ end
 
 # Server
 
-server = WEBrick::HTTPServer.new Port: 8000
+class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
+  def do_GET(req, res)
+    if req.query['token'] != '***REMOVED***'
+      res.status = 503
+      res.body = 'Forbidden'
+    else
+      fetcher = HranilkaFetcher.new('***REMOVED***')
+      menu = fetcher.todays_menu
 
-server.mount_proc '/' do |req, res|
-  a = HranilkaFetcher.new('***REMOVED***')
-  image = a.todays_menu
-  if image
-    res.body = image
-  else
-    res.body = "Can'f find the menu for today"
+      if menu
+        payload = slack_payload(menu['message'], image_url: menu['full_picture'])
+      else
+        payload = slack_payload('Can\'t find the menu for today')
+      end
+
+      res['Content-Type'] = 'application/json'
+      res.status = 200
+      res.body = JSON.generate(payload)
+    end
+  end
+
+  def slack_payload(text, attachment)
+    payload = {
+      response_type: 'in_channel',
+      text: text,
+      attachments: []
+    }
+    payload[:attachments] << attachment if attachment
+    payload
   end
 end
 
+server = WEBrick::HTTPServer.new Port: 8000
+server.mount '/', SlackResponder
 Signal.trap('INT') { server.shutdown }
-
 server.start
