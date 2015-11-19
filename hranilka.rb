@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'koala'
 require 'active_support'
 require 'active_support/core_ext'
@@ -45,7 +47,7 @@ class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
       menu = fetcher.todays_menu
 
       if menu
-        payload = slack_payload(menu['message'], image_url: menu['full_picture'])
+        payload = slack_payload(menu['message'], image_url: menu['full_picture'], fallback: 'Menu')
       else
         payload = slack_payload('Can\'t find the menu for today')
       end
