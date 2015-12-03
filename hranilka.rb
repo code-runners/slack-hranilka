@@ -21,7 +21,7 @@ class HranilkaFetcher
   end
 
   def todays_menu
-    posts.find { |p| weekday_mentioned?(p['message']) }
+    posts.find { |p| weekday_mentioned?(p['message']) && p['full_picture']}
   end
 
   private
