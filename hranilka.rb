@@ -6,7 +6,7 @@ require 'active_support/core_ext'
 require 'webrick'
 
 class HranilkaFetcher
-  WEEK_DAYS = %w(понеделник вторник сряда четвъртък петък)
+  WEEK_DAYS = %w(понеделник вторник сряда четвъртък петък събота неделя)
 
   def initialize(access_token) # long lived access token
     @access_token = access_token
