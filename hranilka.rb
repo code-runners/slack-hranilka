@@ -7,6 +7,7 @@ require 'webrick'
 
 class HranilkaFetcher
   WEEK_DAYS = %w(понеделник вторник сряда четвъртък петък събота неделя)
+  FALLBACK_WORDS = %w(меню)
 
   def initialize(access_token) # long lived access token
     @access_token = access_token
@@ -21,18 +22,35 @@ class HranilkaFetcher
   end
 
   def todays_menu
-    posts.find_all { |p| p['full_picture'] && p['message'] }
-      .find { |p| weekday_mentioned?(p['message']) }
+    suspected_posts = posts.find_all do |p|
+      p['full_picture'] && p['message'] && p['message'].size < 255
+    end
+
+    todays_menu =
+      suspected_posts.find { |p| weekday_mentioned?(p['message']) }
+
+    if todays_menu.nil?
+      todays_menu =
+        suspected_posts.find { |p| fallback_word_mentioned?(p['message']) }
+    end
   end
 
   private
 
   def weekday_mentioned?(message)
+    word_mentioned?(message, WEEK_DAYS)
+  end
+
+  def fallback_word_mentioned?(message)
+    word_mentioned?(message, FALLBACK_WORDS)
+  end
+
+  def word_mentioned?(message, words)
     message
       .mb_chars
       .gsub(/[^a-z а-я]/i, ' ')
       .downcase.split(' ')
-      .any? { |c| WEEK_DAYS.include?(c.squeeze) }
+      .any? { |c| words.include?(c.squeeze) }
   end
 end
 
