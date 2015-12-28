@@ -77,7 +77,7 @@ class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
     end
   end
 
-  def slack_payload(text, attachment)
+  def slack_payload(text, attachment = nil)
     payload = {
       response_type: 'in_channel',
       text: text,
