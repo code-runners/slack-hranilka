@@ -1,6 +1,6 @@
-### Hranilka Slack ###
+### Slack Хранилка ###
 
-Hranilka-slack is a slack responder for fetching the daily lunch menu of a local (Sofia center) [Food shop](https://www.facebook.com/hranilka/).
+Slack Хранилка is a slack responder for fetching the daily lunch menu of a local (Sofia center) [Food shop](https://www.facebook.com/hranilka/).
 
 #### Usage ####
 In slack just use `/hranilka` and you will get the daily menu like this:
