@@ -1,19 +1,19 @@
-### Slack Хранилка ###
+# Slack Хранилка
 
 Slack Хранилка is a slack responder for fetching the daily lunch menu of a local (Sofia center) [Food shop](https://www.facebook.com/hranilka/).
 
-#### Usage ####
+## Usage
 In slack just use `/hranilka` and you will get the daily menu like this:
 
 ![Example daily menu](docs/screenshot.png)
 
-#### Running service ####
+## Running service
 
-###### Create a slack webhook ######
+### Create a slack webhook
 Login to your slack account and create a [Incoming Webhook](https://api.slack.com/incoming-webhooks). No specific configuration required, just add a security token to protect it from third party calls.
 
 
-###### Running the responder #######
+### Running the responder
 ```
 % FACEBOOK_TOKEN=XXX
 % SLACK_TOKEN=XXX
