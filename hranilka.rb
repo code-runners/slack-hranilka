@@ -58,11 +58,11 @@ end
 
 class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
-    if req.query['token'] != '***REMOVED***'
+    if req.query['token'] != ENV['SLACK_TOKEN']
       res.status = 503
       res.body = 'Forbidden'
     else
-      fetcher = HranilkaFetcher.new('***REMOVED***')
+      fetcher = HranilkaFetcher.new(ENV['FACEBOOK_TOKEN'])
       menu = fetcher.todays_menu
 
       if menu
