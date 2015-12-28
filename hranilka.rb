@@ -5,7 +5,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'webrick'
 
-class HranilkaFetcher
+class HranilkaFetcher # :nodoc:
   WEEK_DAYS = %w(понеделник вторник сряда четвъртък петък събота неделя)
   FALLBACK_WORDS = %w(меню)
 
@@ -29,10 +29,13 @@ class HranilkaFetcher
     todays_menu =
       suspected_posts.find { |p| weekday_mentioned?(p['message']) }
 
+    # Fallback to predefined keywords if no weekday mention found.
     if todays_menu.nil?
       todays_menu =
         suspected_posts.find { |p| fallback_word_mentioned?(p['message']) }
     end
+
+    todays_menu
   end
 
   private
@@ -56,7 +59,7 @@ end
 
 # Server
 
-class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
+class SlackResponder < WEBrick::HTTPServlet::AbstractServlet # :nodoc:
   def do_GET(req, res)
     if req.query['token'] != ENV['SLACK_TOKEN']
       res.status = 503
@@ -66,7 +69,9 @@ class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
       menu = fetcher.todays_menu
 
       if menu
-        payload = slack_payload(menu['message'], image_url: menu['full_picture'], fallback: 'Menu')
+        payload =
+          slack_payload(menu['message'],
+                        attachment_payload(menu['full_picture']))
       else
         payload = slack_payload('Can\'t find the menu for today')
       end
@@ -85,6 +90,10 @@ class SlackResponder < WEBrick::HTTPServlet::AbstractServlet
     }
     payload[:attachments] << attachment if attachment
     payload
+  end
+
+  def attachment_payload(image_url, plain_text_fallback = 'Menu')
+    { image_url: image_url, fallback: plain_text_fallback }
   end
 end
 
